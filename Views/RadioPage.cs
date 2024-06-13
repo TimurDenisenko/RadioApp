@@ -7,6 +7,7 @@ namespace RadioApp.Views;
 public class RadioPage : ContentPage
 {
     ImageButton likeButton;
+    AbsoluteLayout layout;
     bool like;
     public RadioPage()
     {
@@ -23,7 +24,7 @@ public class RadioPage : ContentPage
             Text = video?.Title ?? "None",
             FontSize = 25,
             TextColor = Colors.White,
-            HorizontalOptions = LayoutOptions.Center
+            HorizontalOptions = LayoutOptions.Center,
         };
         MediaElement mediaElement = new MediaElement
         {
@@ -33,7 +34,7 @@ public class RadioPage : ContentPage
             ShouldShowPlaybackControls = false,
             Margin = new Thickness(0,20,0,20)
         };
-        //mediaElement.Loaded += (s, e) => mediaElement.Play();
+        mediaElement.Loaded += (s, e) => mediaElement.Play();
         likeButton = new ImageButton
         {
             Source = FileManage.ConvertToImageSource(Properties.Resources.dislike),
@@ -55,21 +56,30 @@ public class RadioPage : ContentPage
             WidthRequest = 80,
             Margin = new Thickness(50, 0, 0, 0)
         };
-        //Сделай абсолютный лайоут
+        HorizontalStackLayout titleLayout = new HorizontalStackLayout
+        {
+            Children = { title },
+            WidthRequest = 400,
+            Padding = new Thickness(140,0,0,0)
+        };
+        AbsoluteLayout actionLayout = new AbsoluteLayout
+        {
+            Children = { back, likeButton, forward },
+            WidthRequest = 400,
+        };
+        actionLayout.SetLayoutBounds(back,new Rect(-120,0,400,50));
+        actionLayout.SetLayoutBounds(likeButton, new Rect(0, 0, 400, 50));
+        actionLayout.SetLayoutBounds(forward, new Rect(120, 0, 400, 50));
         Content = new StackLayout
         {
-            Children = 
+            Children =
             {
-                new HorizontalStackLayout { Children = { title }, WidthRequest = 400, HorizontalOptions = LayoutOptions.Center, Padding = new Thickness(130,0,0,0) },
+                titleLayout,
                 mediaElement,
-                new HorizontalStackLayout
-                { 
-                    Children = { back, likeButton, forward },
-                    WidthRequest = 400, HorizontalOptions = LayoutOptions.Center, Padding = new Thickness(25,0,0,0)
-                }
+                actionLayout,
             },
-            BackgroundColor = Colors.Black
-        };
+        }; 
+        BackgroundColor = Colors.Black;
     }
 
     private async void LikeButton_Clicked(object? sender, EventArgs e)

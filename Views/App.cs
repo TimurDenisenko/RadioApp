@@ -4,11 +4,17 @@ namespace RadioApp.Views
 {
     public partial class App : Application
     {
-        public const string DATABASE_NAME = "radio.db";
-        private static Repository? database;
-        public static Repository Database
+        public const string DATABASE_NAME_RADIO = "radio.db";
+        private static Repository? databaseRadio;
+        public static Repository DatabaseRadio
         {
-            get => database ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME));
+            get => databaseRadio ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_RADIO));
+        }
+        public const string DATABASE_NAME_USER = "user.db";
+        private static Repository? databaseUser;
+        public static Repository DatabaseUser
+        {
+            get => databaseUser ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_USER));
         }
         public App()
         {
