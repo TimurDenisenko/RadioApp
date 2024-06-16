@@ -7,7 +7,7 @@ namespace RadioApp.ViewModels
 {
     public class UserListViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<UserListViewModel> Users { get; set; }
+        public ObservableCollection<UserViewModel> Users { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         public ICommand CreateUserCommand { get; protected set; }
         public ICommand DeleteUserCommand { get; protected set; }
@@ -16,7 +16,7 @@ namespace RadioApp.ViewModels
         public INavigation Navigation { get; set; }
         public UserListViewModel()
         {
-            Users = new ObservableCollection<UserListViewModel>();
+            Users = new ObservableCollection<UserViewModel>();
             DeleteUserCommand = new Command(DeleteUser);
             SaveUserCommand = new Command(SaveUser);
             BackCommand = new Command(Back);
@@ -29,13 +29,13 @@ namespace RadioApp.ViewModels
         private void Back() => Navigation.PopAsync();
         private void SaveUser(object user)
         {
-            if (user is not UserListViewModel userModel || userModel == null || !userModel.IsValid || Users.Contains(userModel)) return;
+            if (user is not UserViewModel userModel || userModel == null || !userModel.IsValid || Users.Contains(userModel)) return;
             Users.Add(userModel);
             Back();
         }
         private void DeleteUser(object user)
         {
-            if (user is not UserListViewModel userModel || userModel == null) return;
+            if (user is not UserViewModel userModel || userModel == null) return;
             Users.Remove(userModel);
             Back();
         }

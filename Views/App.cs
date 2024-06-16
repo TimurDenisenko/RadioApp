@@ -20,7 +20,7 @@ namespace RadioApp.Views
         {
             MainPage = new Shell
             {
-                CurrentItem = new RadioPage()
+                CurrentItem = new LoginPage()
             };
         }
     }

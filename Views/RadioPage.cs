@@ -7,11 +7,9 @@ namespace RadioApp.Views;
 public class RadioPage : ContentPage
 {
     ImageButton likeButton;
-    AbsoluteLayout layout;
     bool like;
     public RadioPage()
     {
-        //таблица радио
         //челики добавляют музыку
         //страница с любимым
         // ? отсортировывать 
