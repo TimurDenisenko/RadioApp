@@ -11,7 +11,7 @@ namespace RadioApp.Models
         {
             try
             {
-               return YouTube.Default.GetVideo(url.Split("&si=")[0].Replace("music.", "www.").Replace(".com", ".com/embed").Replace("watch?v=", "") + ".mp4");
+                return YouTube.Default.GetVideo(url.Split("&si=")[0].Replace("music.", "www.").Replace(".com", ".com/embed").Replace("watch?v=", "") + ".mp4");
             }
             catch (Exception)
             {
@@ -19,7 +19,7 @@ namespace RadioApp.Models
             }
         }
         public static ImageSource ConvertToImageSource(byte[] data) => ImageSource.FromStream(() => new MemoryStream(data));
-        public static (byte[],string) HashPassword(string password)
+        public static (byte[], string) HashPassword(string password)
         {
             byte[] salt = new byte[16];
             //I don't want to complicate the pet project too much soo..
@@ -34,7 +34,7 @@ namespace RadioApp.Models
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 10000,
                 numBytesRequested: 32));
-            return (salt,hashed);
+            return (salt, hashed);
         }
     }
 }

@@ -30,7 +30,7 @@ public class RadioPage : ContentPage
             WidthRequest = 400,
             HeightRequest = 300,
             ShouldShowPlaybackControls = false,
-            Margin = new Thickness(0,20,0,20)
+            Margin = new Thickness(0, 20, 0, 20)
         };
         mediaElement.Loaded += (s, e) => mediaElement.Play();
         likeButton = new ImageButton
@@ -58,14 +58,14 @@ public class RadioPage : ContentPage
         {
             Children = { title },
             WidthRequest = 400,
-            Padding = new Thickness(140,0,0,0)
+            Padding = new Thickness(140, 0, 0, 0)
         };
         AbsoluteLayout actionLayout = new AbsoluteLayout
         {
             Children = { back, likeButton, forward },
             WidthRequest = 400,
         };
-        actionLayout.SetLayoutBounds(back,new Rect(-120,0,400,50));
+        actionLayout.SetLayoutBounds(back, new Rect(-120, 0, 400, 50));
         actionLayout.SetLayoutBounds(likeButton, new Rect(0, 0, 400, 50));
         actionLayout.SetLayoutBounds(forward, new Rect(120, 0, 400, 50));
         Content = new StackLayout
@@ -76,7 +76,7 @@ public class RadioPage : ContentPage
                 mediaElement,
                 actionLayout,
             },
-        }; 
+        };
         BackgroundColor = Colors.Black;
     }
 

@@ -8,13 +8,13 @@ namespace RadioApp.Views
         private static Repository? databaseRadio;
         public static Repository DatabaseRadio
         {
-            get => databaseRadio ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_RADIO));
+            get => databaseRadio ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_RADIO), new MusicModel());
         }
         public const string DATABASE_NAME_USER = "user.db";
         private static Repository? databaseUser;
         public static Repository DatabaseUser
         {
-            get => databaseUser ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_USER));
+            get => databaseUser ??= new Repository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DATABASE_NAME_USER), new UserModel());
         }
         public App()
         {

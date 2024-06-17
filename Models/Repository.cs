@@ -5,6 +5,7 @@ namespace RadioApp.Models
     public class Repository
     {
         private SQLiteConnection database;
+        private object Model;
         internal Repository(string databasePath, object model)
         {
             database = new SQLiteConnection(databasePath);
@@ -12,28 +13,29 @@ namespace RadioApp.Models
                 database.CreateTable<UserModel>();
             else if (model is MusicModel)
                 database.CreateTable<MusicModel>();
+            Model = model;
         }
-        public Array? GetElemenets<T>()
+        public Array? GetElements()
         {
-            if (typeof(T) == typeof(UserModel))
+            if (Model is UserModel)
                 return database.Table<UserModel>().ToArray();
-            else if (typeof(T) == typeof(MusicModel))
+            else if (Model is MusicModel)
                 return database.Table<MusicModel>().ToArray();
             return null;
         }
-        public object? GetElemenet<T>(int id)
+        public object? GetElement(int id)
         {
-            if (typeof(T) == typeof(UserModel))
+            if (Model is UserModel)
                 return database.Get<UserModel>(id);
-            else if (typeof(T) == typeof(MusicModel))
+            else if (Model is MusicModel)
                 return database.Get<MusicModel>(id);
             return null;
         }
-        public void DeleteElement<T>(int id)
+        public void DeleteElement(int id)
         {
-            if (typeof(T) == typeof(UserModel))
+            if (Model is UserModel)
                 database.Delete<UserModel>(id);
-            else if (typeof(T) == typeof(MusicModel))
+            else if (Model is MusicModel)
                 database.Delete<MusicModel>(id);
         }
         public int SaveElement(object element)
@@ -46,7 +48,7 @@ namespace RadioApp.Models
                     return userModel.Id;
                 }
                 return database.Insert(userModel);
-            }    
+            }
             else if (element is MusicModel musicModel)
             {
                 if (musicModel.Id != 0)
@@ -55,7 +57,7 @@ namespace RadioApp.Models
                     return musicModel.Id;
                 }
                 return database.Insert(musicModel);
-                }
+            }
             return 0;
         }
     }

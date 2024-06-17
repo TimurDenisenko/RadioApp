@@ -99,5 +99,15 @@ namespace RadioApp.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] userIcon {
+            get {
+                object obj = ResourceManager.GetObject("userIcon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
