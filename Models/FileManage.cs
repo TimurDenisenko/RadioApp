@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using VideoLibrary;
 
@@ -36,5 +35,23 @@ namespace RadioApp.Models
                 numBytesRequested: 32));
             return (salt, hashed);
         }
+        //public static bool GetVerification(string email, string user)
+        //{
+        //    MailServer oServer = new MailServer("imap.gmail.com",
+        //                    "timur.denisenko.2006@gmail.com",
+        //                    "hbqk wzeo ifcp ymxo",
+        //                    ServerProtocol.Imap4);
+        //    oServer.SSLConnection = true;
+        //    oServer.Port = 993;
+
+        //    MailClient oClient = new MailClient("TryIt");
+        //    oClient.Connect(oServer);
+        //    oClient.OnReceiveResponse += OClient_OnReceiveResponse;
+        //}
+
+        //private static void OClient_OnReceiveResponse(object sender, byte[] data, bool dataStream, ref bool cancel)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
