@@ -10,7 +10,7 @@ public class LoginPage : ContentPage
     private readonly Entry loginEntry, emailEntry, passwordEntry;
     private readonly Switch passVisible;
     private readonly AbsoluteLayout layout;
-    private string code;
+    private string code, name;
     public LoginPage()
     {
         Background = new LinearGradientBrush
@@ -23,6 +23,7 @@ public class LoginPage : ContentPage
                 new GradientStop { Color = Color.FromRgb(250, 240, 230), Offset = 1 },
             }
         };
+        //Array.ForEach(App.DatabaseUser.GetElements() as UserViewModel[], x => App.DatabaseUser.DeleteElement(x.User.Id));
         Label title = new Label
         {
             Text = "My Account",
@@ -241,31 +242,39 @@ public class LoginPage : ContentPage
 
     private async void SignUp_Event(object? sender, EventArgs e)
     {
-        if (!loginEntry.Text.All(char.IsAsciiLetter))
-        {
-            await DisplayAlert("Viga", "Ainult ASCII letter", "Tühista");
-            return;
-        }
-        else if (loginEntry.Text.Length < 4)
+        if (loginEntry.Text.Length < 4)
         {
             await DisplayAlert("Viga", "korotkij", "Tühista");
             return;
         }
-        else if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name).Contains(loginEntry.Text))
+        else if (!loginEntry.Text.All(char.IsAsciiLetter))
         {
-            await DisplayAlert("Viga", "", "Tühista");
+            await DisplayAlert("Viga", "Ainult ASCII letter", "Tühista");
             return;
         }
+        try
+        {
+            if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name).Contains(loginEntry.Text))
+            {
+                await DisplayAlert("Viga", "", "Tühista");
+                return;
+            }
+        }
+        catch (Exception) { }
         if (!Regex.IsMatch(emailEntry.Text, "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"))
         {
             await DisplayAlert("Viga", "Vale email", "Tühista");
             return;
         }
-        else if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email).Contains(loginEntry.Text))
+        try
         {
-            await DisplayAlert("Viga", "", "Tühista");
-            return;
+            if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email).Contains(loginEntry.Text))
+            {
+                await DisplayAlert("Viga", "", "Tühista");
+                return;
+            }
         }
+        catch (Exception) { }
         if (!passwordEntry.Text.All(char.IsAsciiLetterOrDigit))
         {
             await DisplayAlert("Viga", "parool peab olema ainult ASCII letterist v]i digitist", "Tühista");
@@ -291,6 +300,8 @@ public class LoginPage : ContentPage
         loginButton.Clicked -= SignUp_Event;
         loginButton.Clicked += CheckAccCode_Event;
         loginEntry.Placeholder = "Code";
+        name = loginEntry.Text;
+        loginEntry.Text = string.Empty;
         loginButton.Text = "Check a code";
     }
 
@@ -301,7 +312,7 @@ public class LoginPage : ContentPage
             await DisplayAlert("Viga","","");
             return;
         }
-        App.DatabaseUser.SaveElement(new UserViewModel(loginEntry.Text, emailEntry.Text, passwordEntry.Text));
+        App.DatabaseUser.SaveElement(new UserViewModel(name, emailEntry.Text, passwordEntry.Text));
         await Navigation.PushAsync(new RadioPage());
     }
 
