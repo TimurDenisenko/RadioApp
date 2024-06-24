@@ -11,5 +11,14 @@ namespace RadioApp.Models
         public string? Salt { get; set; }
         public string? Hash { get; set; }
         public bool IsAdmin { get; set; }
+        public UserModel() { }
+        public UserModel(string name, string email, byte[] salt, string hash)
+        {
+            Name = name;
+            Email = email;
+            Salt = salt.ToString();
+            Hash = hash;
+            IsAdmin = false;
+        }
     }
 }

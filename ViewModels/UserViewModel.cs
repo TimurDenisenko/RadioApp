@@ -13,6 +13,11 @@ namespace RadioApp.ViewModels
         {
             User = new UserModel();
         }
+        public UserViewModel(string name, string email, string password)
+        {
+            (byte[], string) pass = GeneralManager.HashPassword(password);
+            User = new UserModel(name, email, pass.Item1, pass.Item2);
+        }
         public UserListViewModel? UsersListViewModel
         {
             get => ulvm;

@@ -16,7 +16,7 @@ public class RadioPage : ContentPage
         // можно остановить музыку нажав на картинку
         // светлая тема
         // связь с телеграммом 
-        YouTubeVideo? video = FileManage.GetVideoUri("https://music.youtube.com/watch?v=pvTyJCNgtLo&si=n72nmmaOc3-9gaJD");
+        YouTubeVideo? video = GeneralManager.GetVideoUri("https://music.youtube.com/watch?v=9mf4umTvEZM&si=lgHoHf-eaCIK8Sme");
         Label title = new Label
         {
             Text = video?.Title ?? "None",
@@ -33,23 +33,24 @@ public class RadioPage : ContentPage
             Margin = new Thickness(0, 20, 0, 20)
         };
         mediaElement.Loaded += (s, e) => mediaElement.Play();
+        mediaElement.Play();
         likeButton = new ImageButton
         {
-            Source = FileManage.ConvertToImageSource(Properties.Resources.dislike),
+            Source = GeneralManager.ConvertToImageSource(Properties.Resources.dislike),
             HeightRequest = 80,
             WidthRequest = 80,
         };
         likeButton.Clicked += LikeButton_Clicked;
         ImageButton back = new ImageButton
         {
-            Source = FileManage.ConvertToImageSource(Properties.Resources.back),
+            Source = GeneralManager.ConvertToImageSource(Properties.Resources.back),
             HeightRequest = 80,
             WidthRequest = 80,
             Margin = new Thickness(0, 0, 50, 0)
         };
         ImageButton forward = new ImageButton
         {
-            Source = FileManage.ConvertToImageSource(Properties.Resources.forward),
+            Source = GeneralManager.ConvertToImageSource(Properties.Resources.forward),
             HeightRequest = 80,
             WidthRequest = 80,
             Margin = new Thickness(50, 0, 0, 0)
@@ -88,9 +89,9 @@ public class RadioPage : ContentPage
             await Task.Delay(1);
         }
         if (like)
-            likeButton.Source = FileManage.ConvertToImageSource(Properties.Resources.like);
+            likeButton.Source = GeneralManager.ConvertToImageSource(Properties.Resources.like);
         else
-            likeButton.Source = FileManage.ConvertToImageSource(Properties.Resources.dislike);
+            likeButton.Source = GeneralManager.ConvertToImageSource(Properties.Resources.dislike);
         for (int i = 0; i < 15; i++)
         {
             likeButton.TranslationX = i % 2 == 0 ? -1 : 1;
