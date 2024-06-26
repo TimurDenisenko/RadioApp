@@ -6,7 +6,7 @@ namespace RadioApp.Views;
 
 public class LoginPage : ContentPage
 {
-    private readonly Button loginButton;
+    private readonly Button loginButton, back;
     private readonly Entry loginEntry, emailEntry, passwordEntry;
     private readonly Switch passVisible;
     private readonly AbsoluteLayout layout;
@@ -23,7 +23,6 @@ public class LoginPage : ContentPage
                 new GradientStop { Color = Color.FromRgb(250, 240, 230), Offset = 1 },
             }
         };
-        App.DatabaseUser.Clear();
         Label title = new Label
         {
             Text = "My Account",
@@ -122,7 +121,7 @@ public class LoginPage : ContentPage
             FontSize = 23,
         };
         loginButton.Clicked += SignIn_Event;
-        Button back = new Button
+        back = new Button
         {
             Text = "Back",
             FontFamily = "Interstate",
@@ -144,6 +143,7 @@ public class LoginPage : ContentPage
             loginEntry.MaxLength = 15;
             loginEntry.Placeholder = "Login";
             loginButton.Text = "Sign in";
+            signUp.Text = "Sign Up";
             passwordEntry.IsVisible = true;
             forgetPass.IsVisible = true;   
             passVisible.IsVisible = true;
@@ -151,6 +151,8 @@ public class LoginPage : ContentPage
             loginButton.Clicked -= SendCode_Event;
             loginButton.Clicked -= RestorePass_Event;
             loginButton.Clicked += SignIn_Event;
+            layout.SetLayoutBounds(passwordEntry, new Rect(-30, -10, layout.WidthRequest, layout.HeightRequest));
+            layout.SetLayoutBounds(passVisible, new Rect(90, -10, layout.WidthRequest, layout.HeightRequest));
         };
         forgetPass.Clicked += (s, e) =>
         {
@@ -218,7 +220,7 @@ public class LoginPage : ContentPage
     {
         try
         {
-            code = GeneralManager.SendCode(loginEntry.Text, false);
+            code = EmailManager.SendCode(loginEntry.Text, false);
         }
         catch (Exception)
         {
@@ -241,8 +243,11 @@ public class LoginPage : ContentPage
                 return;
             }
             loginEntry.IsVisible = false;
-            layout.SetLayoutBounds(passwordEntry, new Rect(-30, -10, layout.WidthRequest, layout.HeightRequest));
-            App.DatabaseUser.SaveElement(((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email == loginEntry.Text) as UserViewModel));
+            passwordEntry.IsVisible = true;
+            passVisible.IsVisible = true;
+            layout.SetLayoutBounds(passwordEntry, new Rect(-30, -90, layout.WidthRequest, layout.HeightRequest));
+            layout.SetLayoutBounds(passVisible, new Rect(90, -90, layout.WidthRequest, layout.HeightRequest));
+            App.DatabaseUser.SaveElement((App.DatabaseUser.GetElements() as UserModel[]).Select(x => x.Email == loginEntry.Text) as UserViewModel);
         }
         catch (Exception)
         {
@@ -265,7 +270,7 @@ public class LoginPage : ContentPage
             }
             try
             {
-                if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name).Contains(loginEntry.Text))
+                if ((App.DatabaseUser.GetElements() as UserModel[]).Select(x => x.Name).Contains(loginEntry.Text))
                 {
                     await DisplayAlert("Error", "The user with this name is already registered", "Cancel");
                     return;
@@ -284,7 +289,7 @@ public class LoginPage : ContentPage
             }
             try
             {
-                if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email).Contains(loginEntry.Text))
+                if ((App.DatabaseUser.GetElements() as UserModel[]).Select(x => x.Email).Contains(emailEntry.Text))
                 {
                     await DisplayAlert("Error", "The user with this email is already registered", "Cancel");
                     return;
@@ -303,7 +308,7 @@ public class LoginPage : ContentPage
             }
             try
             {
-                code = GeneralManager.SendCode(emailEntry.Text, true);
+                code = EmailManager.SendCode(emailEntry.Text, true);
             }
             catch (Exception)
             {
@@ -313,6 +318,7 @@ public class LoginPage : ContentPage
             passwordEntry.IsVisible = false;
             passVisible.IsVisible = false;
             emailEntry.IsVisible = false;
+            back.IsVisible = true;
             loginButton.Clicked -= SignUp_Event;
             loginButton.Clicked += CheckAccCode_Event;
             loginEntry.Placeholder = "Code";
@@ -348,7 +354,7 @@ public class LoginPage : ContentPage
     {
         try
         {
-            if (!GeneralManager.Verify(loginEntry.Text, passwordEntry.Text))
+            if (!PasswordManager.Verify(loginEntry.Text, passwordEntry.Text))
             {
                 await DisplayAlert("Error", "Incorrect password or login entered", "Cancel");
                 return;

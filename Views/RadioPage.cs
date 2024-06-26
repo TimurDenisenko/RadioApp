@@ -11,12 +11,12 @@ public class RadioPage : ContentPage
     public RadioPage()
     {
         //челики добавляют музыку
-        //страница с любимым
+        //страница с любимымs
         // ? отсортировывать 
         // можно остановить музыку нажав на картинку
         // светлая тема
         // связь с телеграммом 
-        YouTubeVideo? video = GeneralManager.GetVideoUri("https://music.youtube.com/watch?v=9mf4umTvEZM&si=lgHoHf-eaCIK8Sme");
+        YouTubeVideo? video = AudioManager.GetVideoUri("https://music.youtube.com/watch?v=9mf4umTvEZM&si=lgHoHf-eaCIK8Sme");
         Label title = new Label
         {
             Text = video?.Title ?? "None",
