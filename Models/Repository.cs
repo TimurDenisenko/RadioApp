@@ -15,6 +15,10 @@ namespace RadioApp.Models
                 database.CreateTable<MusicModel>();
             Model = model;
         }
+        public void Clear()
+        {
+            database.DeleteAll<UserModel>();
+        }
         public Array? GetElements()
         {
             if (Model is UserModel)

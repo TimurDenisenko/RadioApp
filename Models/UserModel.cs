@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using System.Text;
 
 namespace RadioApp.Models
 {
@@ -12,12 +13,13 @@ namespace RadioApp.Models
         public string? Hash { get; set; }
         public bool IsAdmin { get; set; }
         public UserModel() { }
-        public UserModel(string name, string email, byte[] salt, string hash)
+        public UserModel(string name, string email, string password)
         {
+            (byte[], string) pass = GeneralManager.HashPassword(password);
             Name = name;
             Email = email;
-            Salt = salt.ToString();
-            Hash = hash;
+            Salt = Encoding.ASCII.GetString(pass.Item1);
+            Hash = pass.Item2;
             IsAdmin = false;
         }
     }

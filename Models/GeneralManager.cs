@@ -6,6 +6,7 @@ using System.Net;
 using RadioApp.Views;
 using RadioApp.ViewModels;
 using System.Linq;
+using System.Text;
 
 namespace RadioApp.Models
 {
@@ -40,7 +41,7 @@ namespace RadioApp.Models
             byte[] combinedSalt = new byte[salt.Length + globalSalt.Length];
             Buffer.BlockCopy(salt, 0, combinedSalt, 0, salt.Length);
             Buffer.BlockCopy(globalSalt, 0, combinedSalt, salt.Length, globalSalt.Length);
-            return (salt, Hash(password, combinedSalt));
+            return (combinedSalt, Hash(password, combinedSalt));
         }
         public static string Hash(string password, byte[] combinedSalt) =>
             Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -51,8 +52,8 @@ namespace RadioApp.Models
                 numBytesRequested: 32));
         public static bool Verify(string name, string password)
         {
-            UserViewModel user = (App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name == name) as UserViewModel;
-            string verifyHash = Hash(password, user.Salt.ToCharArray().Select(Convert.ToByte).ToArray());
+            UserModel? user = (App.DatabaseUser.GetElements() as UserModel[]).Where(x => x.Name == name).ToArray()[0];
+            string verifyHash = Hash(password, Encoding.ASCII.GetBytes(user.Salt));
             return verifyHash == user.Hash;
 
         }

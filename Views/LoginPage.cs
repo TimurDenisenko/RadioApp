@@ -23,7 +23,7 @@ public class LoginPage : ContentPage
                 new GradientStop { Color = Color.FromRgb(250, 240, 230), Offset = 1 },
             }
         };
-        //Array.ForEach(App.DatabaseUser.GetElements() as UserViewModel[], x => App.DatabaseUser.DeleteElement(x.User.Id));
+        App.DatabaseUser.Clear();
         Label title = new Label
         {
             Text = "My Account",
@@ -141,6 +141,7 @@ public class LoginPage : ContentPage
         };
         back.Clicked += (s, e) =>
         {
+            loginEntry.MaxLength = 15;
             loginEntry.Placeholder = "Login";
             loginButton.Text = "Sign in";
             passwordEntry.IsVisible = true;
@@ -153,6 +154,7 @@ public class LoginPage : ContentPage
         };
         forgetPass.Clicked += (s, e) =>
         {
+            loginEntry.MaxLength = 50;
             loginButton.Clicked -= SignIn_Event;
             loginButton.Clicked += SendCode_Event;
             loginEntry.Placeholder = "Email";
@@ -164,6 +166,7 @@ public class LoginPage : ContentPage
         };
         signUp.Clicked += (sender, args) =>
         {
+            loginEntry.MaxLength = 15;
             loginButton.IsVisible = true;
             passVisible.IsVisible = true;
             passwordEntry.IsVisible = true;
@@ -219,7 +222,7 @@ public class LoginPage : ContentPage
         }
         catch (Exception)
         {
-            await DisplayAlert("", "", "");
+            await DisplayAlert("Error", "Empty or incorrect email entered", "Cancel");
             return;
         }
         loginButton.Clicked -= SendCode_Event;
@@ -230,99 +233,131 @@ public class LoginPage : ContentPage
 
     private async void RestorePass_Event(object? sender, EventArgs e)
     {
-        if (code != loginEntry.Text)
-        {
-            await DisplayAlert("", "", "");
-            return;
-        }
-        loginEntry.IsVisible = false;
-        layout.SetLayoutBounds(passwordEntry, new Rect(-30, -10, layout.WidthRequest, layout.HeightRequest));
-        App.DatabaseUser.SaveElement(((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email == loginEntry.Text) as UserViewModel));
-    }
-
-    private async void SignUp_Event(object? sender, EventArgs e)
-    {
-        if (loginEntry.Text.Length < 4)
-        {
-            await DisplayAlert("Viga", "korotkij", "Tühista");
-            return;
-        }
-        else if (!loginEntry.Text.All(char.IsAsciiLetter))
-        {
-            await DisplayAlert("Viga", "Ainult ASCII letter", "Tühista");
-            return;
-        }
         try
         {
-            if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name).Contains(loginEntry.Text))
+            if (code != loginEntry.Text)
             {
-                await DisplayAlert("Viga", "", "Tühista");
+                await DisplayAlert("Error", "Incorrect code entered", "Cancel");
                 return;
             }
-        }
-        catch (Exception) { }
-        if (!Regex.IsMatch(emailEntry.Text, "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"))
-        {
-            await DisplayAlert("Viga", "Vale email", "Tühista");
-            return;
-        }
-        try
-        {
-            if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email).Contains(loginEntry.Text))
-            {
-                await DisplayAlert("Viga", "", "Tühista");
-                return;
-            }
-        }
-        catch (Exception) { }
-        if (!passwordEntry.Text.All(char.IsAsciiLetterOrDigit))
-        {
-            await DisplayAlert("Viga", "parool peab olema ainult ASCII letterist v]i digitist", "Tühista");
-            return;
-        }
-        else if (passwordEntry.Text.Length<11)
-        {
-            await DisplayAlert("Viga", "parool korotkij", "Tühista");
-            return;
-        }
-        try
-        {
-            code = GeneralManager.SendCode(emailEntry.Text, true);
+            loginEntry.IsVisible = false;
+            layout.SetLayoutBounds(passwordEntry, new Rect(-30, -10, layout.WidthRequest, layout.HeightRequest));
+            App.DatabaseUser.SaveElement(((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email == loginEntry.Text) as UserViewModel));
         }
         catch (Exception)
         {
-            await DisplayAlert("Viga", "ne poluchilos otpravit", "Tühista");
-            return;
+            await DisplayAlert("Error", "Fill in the code field", "Cancel");
         }
-        passwordEntry.IsVisible = false;
-        passVisible.IsVisible = false;
-        emailEntry.IsVisible = false;
-        loginButton.Clicked -= SignUp_Event;
-        loginButton.Clicked += CheckAccCode_Event;
-        loginEntry.Placeholder = "Code";
-        name = loginEntry.Text;
-        loginEntry.Text = string.Empty;
-        loginButton.Text = "Check a code";
+    }
+    private async void SignUp_Event(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (loginEntry.Text.Length < 4)
+            {
+                await DisplayAlert("Error", "Login is too short", "Cancel");
+                return;
+            }
+            else if (!loginEntry.Text.All(char.IsAsciiLetter))
+            {
+                await DisplayAlert("Error", "The name must consist of letters only", "Cancel");
+                return;
+            }
+            try
+            {
+                if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Name).Contains(loginEntry.Text))
+                {
+                    await DisplayAlert("Error", "The user with this name is already registered", "Cancel");
+                    return;
+                }
+            }
+            catch (Exception) { }
+            if (emailEntry.Text.Length < 10)
+            {
+                await DisplayAlert("Error", "Incorrect email entered or data missing", "Cancel");
+                return;
+            }
+            else if (!Regex.IsMatch(emailEntry.Text, "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"))
+            {
+                await DisplayAlert("Error", "Invalid email entered", "Cancel");
+                return;
+            }
+            try
+            {
+                if ((App.DatabaseUser.GetElements() as UserViewModel[]).Select(x => x.Email).Contains(loginEntry.Text))
+                {
+                    await DisplayAlert("Error", "The user with this email is already registered", "Cancel");
+                    return;
+                }
+            }
+            catch (Exception) { }
+            if (passwordEntry.Text.Length < 4)
+            {
+                await DisplayAlert("Error", "Too short password", "Cancel");
+                return;
+            }
+            else if (!passwordEntry.Text.All(char.IsAsciiLetterOrDigit))
+            {
+                await DisplayAlert("Error", "The password must consist only of Latin letters or numbers", "Cancel");
+                return;
+            }
+            try
+            {
+                code = GeneralManager.SendCode(emailEntry.Text, true);
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Error", "Failed to send registration code, check the email field", "Cancel");
+                return;
+            }
+            passwordEntry.IsVisible = false;
+            passVisible.IsVisible = false;
+            emailEntry.IsVisible = false;
+            loginButton.Clicked -= SignUp_Event;
+            loginButton.Clicked += CheckAccCode_Event;
+            loginEntry.Placeholder = "Code";
+            name = loginEntry.Text;
+            loginEntry.Text = string.Empty;
+            loginButton.Text = "Check a code";
+        }
+        catch (Exception)
+        {
+            await DisplayAlert("Error", "Something went wrong, check that your data entered is correct and be sure to fill in all fields", "Cancel");
+        }
     }
 
     private async void CheckAccCode_Event(object? sender, EventArgs e)
     {
-        if (code != loginEntry.Text)
+        try
         {
-            await DisplayAlert("Viga","","");
-            return;
+            if (code != loginEntry.Text)
+            {
+                await DisplayAlert("Error", "Incorrect code entered", "Cancel");
+                return;
+            }
+            App.DatabaseUser.SaveElement(new UserModel(name, emailEntry.Text, passwordEntry.Text));
+            await Navigation.PushAsync(new RadioPage());
         }
-        App.DatabaseUser.SaveElement(new UserViewModel(name, emailEntry.Text, passwordEntry.Text));
-        await Navigation.PushAsync(new RadioPage());
+        catch (Exception)
+        {
+            await DisplayAlert("Error", "Data input awaited", "Cancel");
+        }
     }
 
     private async void SignIn_Event(object? sender, EventArgs e)
     {
-        if (!GeneralManager.Verify(loginEntry.Text, passwordEntry.Text))
+        try
         {
-            await DisplayAlert("", "", "");
-            return;
+            if (!GeneralManager.Verify(loginEntry.Text, passwordEntry.Text))
+            {
+                await DisplayAlert("Error", "Incorrect password or login entered", "Cancel");
+                return;
+            }
+            await Navigation.PushAsync(new RadioPage());
         }
-        await Navigation.PushAsync(new RadioPage());
+        catch (Exception)
+        {
+            await DisplayAlert("Error", "Data input awaited", "Cancel");
+        }
     }
 }
