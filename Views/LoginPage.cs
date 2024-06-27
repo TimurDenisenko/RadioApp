@@ -10,7 +10,7 @@ public class LoginPage : ContentPage
     private readonly Entry loginEntry, emailEntry, passwordEntry;
     private readonly Switch passVisible;
     private readonly AbsoluteLayout layout;
-    private string code, name;
+    private string code, name, email;
     public LoginPage()
     {
         Background = new LinearGradientBrush
@@ -148,6 +148,7 @@ public class LoginPage : ContentPage
             forgetPass.IsVisible = true;   
             passVisible.IsVisible = true;
             back.IsVisible = false;
+            loginEntry.IsVisible = true;
             loginButton.Clicked -= SendCode_Event;
             loginButton.Clicked -= RestorePass_Event;
             loginButton.Clicked += SignIn_Event;
@@ -227,6 +228,8 @@ public class LoginPage : ContentPage
             await DisplayAlert("Error", "Empty or incorrect email entered", "Cancel");
             return;
         }
+        email = loginEntry.Text;
+        loginEntry.Text = string.Empty;
         loginButton.Clicked -= SendCode_Event;
         loginEntry.Placeholder = "Code";
         loginButton.Text = "Check a code";
@@ -245,14 +248,40 @@ public class LoginPage : ContentPage
             loginEntry.IsVisible = false;
             passwordEntry.IsVisible = true;
             passVisible.IsVisible = true;
+            loginButton.Text = "Change password";
             layout.SetLayoutBounds(passwordEntry, new Rect(-30, -90, layout.WidthRequest, layout.HeightRequest));
             layout.SetLayoutBounds(passVisible, new Rect(90, -90, layout.WidthRequest, layout.HeightRequest));
-            App.DatabaseUser.SaveElement((App.DatabaseUser.GetElements() as UserModel[]).Select(x => x.Email == loginEntry.Text) as UserViewModel);
+            loginButton.Clicked -= RestorePass_Event;
+            loginButton.Clicked += ChangePassword_Event;
         }
         catch (Exception)
         {
             await DisplayAlert("Error", "Fill in the code field", "Cancel");
         }
+    }
+    private async void ChangePassword_Event(object? sender, EventArgs e)
+    {
+        if (!await CheckPassword(passwordEntry.Text))
+            return;
+        UserViewModel user = (App.DatabaseUser.GetElements() as UserModel[]).Select(x => x.Email == email) as UserViewModel;
+        (byte[],string) pass = PasswordManager.HashPassword(passwordEntry.Text);
+        user.ChangeSaltHash(pass.Item2,pass.Item1);
+        App.DatabaseUser.SaveElement(user);
+        Navigation.PushAsync(new RadioPage());
+    }
+    private async Task<bool> CheckPassword(string password)
+    {
+        if (passwordEntry.Text.Length < 4)
+        {
+            await DisplayAlert("Error", "Too short password", "Cancel");
+            return false;
+        }
+        else if (!passwordEntry.Text.All(char.IsAsciiLetterOrDigit))
+        {
+            await DisplayAlert("Error", "The password must consist only of Latin letters or numbers", "Cancel");
+            return false;
+        }
+        return true;
     }
     private async void SignUp_Event(object? sender, EventArgs e)
     {
@@ -277,6 +306,8 @@ public class LoginPage : ContentPage
                 }
             }
             catch (Exception) { }
+            if (!await CheckPassword(passwordEntry.Text))
+                return;
             if (emailEntry.Text.Length < 10)
             {
                 await DisplayAlert("Error", "Incorrect email entered or data missing", "Cancel");
@@ -296,16 +327,6 @@ public class LoginPage : ContentPage
                 }
             }
             catch (Exception) { }
-            if (passwordEntry.Text.Length < 4)
-            {
-                await DisplayAlert("Error", "Too short password", "Cancel");
-                return;
-            }
-            else if (!passwordEntry.Text.All(char.IsAsciiLetterOrDigit))
-            {
-                await DisplayAlert("Error", "The password must consist only of Latin letters or numbers", "Cancel");
-                return;
-            }
             try
             {
                 code = EmailManager.SendCode(emailEntry.Text, true);

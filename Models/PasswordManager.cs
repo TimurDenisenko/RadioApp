@@ -18,7 +18,7 @@ namespace RadioApp.Models
             Buffer.BlockCopy(globalSalt, 0, combinedSalt, salt.Length, globalSalt.Length);
             return (combinedSalt, Hash(password, combinedSalt));
         }
-        public static string Hash(string password, byte[] combinedSalt) =>
+        protected static string Hash(string password, byte[] combinedSalt) =>
             Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
                 salt: combinedSalt,

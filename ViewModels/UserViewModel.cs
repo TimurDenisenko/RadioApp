@@ -82,5 +82,15 @@ namespace RadioApp.ViewModels
             if (PropertyChanged == null) return;
             PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
+        internal void ChangeSaltHash(string hash, byte[] salt)
+        {
+            string newSalt = Convert.ToBase64String(salt);
+            if (User.Salt == newSalt) return;
+            if (User.Hash == hash) return;
+            User.Salt = newSalt;
+            User.Hash = hash;
+            OnPropertyChanged("Salt");
+            OnPropertyChanged("Hash");
+        }
     }
 }
